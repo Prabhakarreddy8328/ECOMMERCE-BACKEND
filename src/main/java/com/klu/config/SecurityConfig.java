@@ -15,27 +15,35 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-            .cors(cors -> {}) // ✅ ADD THIS
-            .csrf(csrf -> csrf.disable())
+            .cors(cors -> {}) // ✅ enable CORS
+            .csrf(csrf -> csrf.disable()) // disable CSRF for API
             .authorizeHttpRequests(auth -> auth
-                .anyRequest().permitAll()
+                .anyRequest().permitAll() // allow all requests
             );
 
         return http.build();
     }
 
-    // ✅ ADD THIS METHOD (MAIN FIX)
+    // ✅ MAIN CORS CONFIGURATION (FIXED)
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
 
         CorsConfiguration config = new CorsConfiguration();
 
+        // ✅ IMPORTANT: allow FRONTEND URL (not backend)
         config.setAllowedOrigins(List.of(
-          "https://ecommerce-backend-production-0972.up.railway.app"
+            "https://ecommerce-frontend-production-7e09.up.railway.app"
         ));
 
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        // ✅ allow all required methods
+        config.setAllowedMethods(List.of(
+            "GET", "POST", "PUT", "DELETE", "OPTIONS"
+        ));
+
+        // ✅ allow headers
         config.setAllowedHeaders(List.of("*"));
+
+        // ✅ allow credentials (cookies, auth headers)
         config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source =
